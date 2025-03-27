@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equilibrium 2025 | Gurucharan Das Status Tracker</title>
+  <style>
+    /* Same CSS as before */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #0056b3;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      position: relative;
+    }
+    header h1 {
+      font-size: 36px;
+      margin: 0;
+    }
+    header h2 {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+    .dark-mode-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .dark-mode-btn:hover {
+      background-color: #555;
+    }
+    .container {
+      flex: 1;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    label, button, input {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    input {
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      color: black !important; /* Always keep text color black */
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .details {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #333; /* Ensure visible text in light mode */
+    }
+    .details p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .details a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .details a:hover {
+      text-decoration: underline;
+    }
+    #loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #loading img {
+      width: 50px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px 0;
+      background-color: #0056b3;
+      color: white;
+    }
+    footer p {
+      margin: 0;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #f4f4f9;
+    }
+    .dark-mode header {
+      background-color: #1e1e1e;
+    }
+    .dark-mode footer {
+      background-color: #1e1e1e;
+    }
+    .dark-mode .container {
+      background-color: #1e1e1e;
+      color: #f4f4f9;
+    }
+    .dark-mode button {
+      background-color: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Equilibrium 2025</h1>
+    <h2>Participant Status Tracker</h2>
+    <button class="dark-mode-btn" onclick="toggleDarkMode()">Dark Mode</button>
+  </header>
+  <div class="container">
+    <div>
+      <label id="searchLabel" for="searchBox">Enter UID:</label>
+      <input type="text" id="searchBox" placeholder="UID">
+      <button onclick="searchParticipant()">Search</button>
+      <button onclick="toggleSearchMode()" id="toggleButton">Search by Name</button>
+    </div>
+    <div id="loading">
+      <img src="https://i.imgur.com/llF5iyg.gif" alt="Loading...">
+    </div>
+    <div class="details" id="details"></div>
+  </div>
+  <footer>
+    <p>&copy; 2025 Equilibrium</p>
+  </footer>
+  <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbxBCcJeUgSsxLr9xRnERFcPAi0LAyzYgl1yNWGyt-fWPFNPMqwJDLud_7N0uPHamhLT/exec"; // Replace with your actual Apps Script URL
+    let isUIDSearch = true; // State for search mode
+
+    function searchParticipant() {
+      const searchBox = document.getElementById("searchBox");
+      const searchValue = searchBox.value;
+      if (!searchValue) {
+        alert(`Please enter a ${isUIDSearch ? 'UID' : 'Name'}.`);
+        return;
+      }
+
+      // Show spinner
+      document.getElementById("loading").style.display = "block";
+
+      const searchParam = isUIDSearch ? `uid=${searchValue}` : `name=${searchValue}`;
+
+      fetch(`${apiUrl}?action=search&${searchParam}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("loading").style.display = "none"; // Hide spinner
+
+          if (data.error) {
+            document.getElementById("details").innerHTML = `<p>${data.error}</p>`;
+          } else {
+            document.getElementById("details").innerHTML = `
+              <p><strong>UID:</strong> ${data.uid}</p>
+              <p><strong>Team ID:</strong> ${data.teamID}</p>
+              <p><strong>Team Name:</strong> ${data.teamName}</p>
+              <p><strong>Name:</strong> ${data.name}</p>
+              <p><strong>Email:</strong> ${data.email}</p>
+              <p><strong>Mobile:</strong> ${data.mobile}</p>
+              <p><strong>Gender:</strong> ${data.gender}</p>
+              <p><strong>Organisation:</strong> ${data.organisation}</p>
+              <p><strong>College ID:</strong> <a href="${data.collegeID}" target="_blank">View Image</a></p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <button onclick="updateStatus('${data.uid}', 'In')">Mark In</button>
+              <button onclick="updateStatus('${data.uid}', 'Out')">Mark Out</button>
+            `;
+          }
+        })
+        .catch(() => {
+          document.getElementById("loading").style.display = "none";
+          document.getElementById("details").innerHTML = `<p>Network error. Please check your connection and try again.</p>`;
+        });
+    }
+
+    function toggleSearchMode() {
+      const searchLabel = document.getElementById("searchLabel");
+      const searchBox = document.getElementById("searchBox");
+      const toggleButton = document.getElementById("toggleButton");
+
+      if (isUIDSearch) {
+        searchLabel.textContent = "Enter Name:";
+        searchBox.placeholder = "Name";
+        toggleButton.textContent = "Search by UID";
+      } else {
+        searchLabel.textContent = "Enter UID:";
+        searchBox.placeholder = "UID";
+        toggleButton.textContent = "Search by Name";
+      }
+      isUIDSearch = !isUIDSearch;
+    }
+
+    function updateStatus(uid, status) {
+      document.getElementById("loading").style.display = "block"; // Show spinner
+      fetch(`${apiUrl}?action=update&uid=${uid}&status=${status}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("loading").style.display = "none"; // Hide spinner
+          if (data.success) {
+            alert("Status updated successfully!");
+            searchParticipant(); // Refresh the details
+          } else {
+            alert(data.error || "Failed to update status.");
+          }
+        });
+    }
+
+    function toggleDarkMode() {
+      const body = document.body;
+      body.classList.toggle("dark-mode");
+    }
+  </script>
+</body>
+</html>
